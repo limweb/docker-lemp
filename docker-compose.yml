@@ -11,7 +11,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./php:/var/www/html
+      - ./php/app:/var/www/html/app
     environment:
       MYSQL_ROOT_PASSWORD: dbrootpass
       MYSQL_DATABASE: dbname
