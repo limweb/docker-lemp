@@ -1,0 +1,21 @@
+#  docker-compose -f docker-compose.yml config check validate config
+version: "2.1"
+services:
+  nginxweb:
+    image: "limweb/docker-nginx-fw74"
+    container_name: nginxweb
+    working_dir: /var/www/html
+    restart: "no"
+    # for swoole if use nginx commnt  command
+    # command: "/usr/local/bin/php /var/www/html/swoole.php"
+    ports:
+      - "8080:80"
+    volumes:
+      - ./php:/var/www/html
+    environment:
+      MYSQL_ROOT_PASSWORD: dbrootpass
+      MYSQL_DATABASE: dbname
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: dbpass
+    network_mode:  "bridge"
+
