@@ -63,6 +63,9 @@ ADD scripts/letsencrypt-renew /usr/bin/letsencrypt-renew
 # resource
 COPY php/index.php /var/www/html/index.php
 COPY php/index1.php /var/www/html/index1.php
+COPY php/ntunnel_mysql.php /var/www/html/ntunnel_mysql.php
+COPY php/ntunnel_pgsql.php /var/www/html/ntunnel_pgsql.php
+COPY php/ntunnel_sqlite.php /var/www/html/ntunnel_sqlite.php
 COPY php/app  /var/www/html/app
 COPY php/vendor  /var/www/html/vendor
 COPY php/composer.lock /var/www/html/composer.lock
