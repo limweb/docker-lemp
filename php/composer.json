@@ -1,0 +1,31 @@
+{
+    "name": "servit/dockerfw7",
+    "description": "SERV WEB FRAMEWORK for PHP7+",
+    "authors": [{
+        "name": "Thongchai Lim",
+        "email": "limweb@hotmail.com"
+    }],
+    "repositories": [{
+        "name": "servit/framework7",
+        "type": "vcs",
+        "url": "file://d:/works/servit/framework7/.git"
+    }],
+    "require": {
+        "php": ">=7.3.0",
+        "illuminate/database": "6.8.*",
+        "illuminate/events": "6.8.*",
+        "symfony/var-dumper": "4.4.*",
+        "lcobucci/jwt": "3.2.*",
+        "php-curl-class/php-curl-class": "8.6.*",
+        "eoghanobrien/php-simple-mail": "dev-master",
+        "vlucas/phpdotenv": "3.4.*",
+        "webonyx/graphql-php": "dev-master",
+        "nesbot/carbon": "2.*",
+        "jenssegers/mongodb": "dev-master",
+        "endroid/qrcode": "^3.0@dev",
+        "mpdf/mpdf": "dev-master",
+        "mk-j/php_xlsxwriter": "dev-master",
+        "servit/framework7": "dev-master"
+    },
+    "minimum-stability": "dev"
+}
