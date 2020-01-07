@@ -2,20 +2,25 @@
 
 > Do not use in Production.
 
-A minimal single container LEMP stack for local development.
+A minimal single container LEMP full stack for local development.
 
 It is quick jumpstart for onboarding you into docker based development.
 
 The docker container `adhocore/lemp` is composed of:
 
-Name   | Version | Port
--------|---------|------
-Alpine | 3.10    | -
-PHP    | 7.3.11  | 9000
-MySQL`*` | 5.7   | 3306
-nginx  | 1.14.2  | 80
+Name        | Version    | Port
+------------|------------|------
+alpine      | 3.10       | -
+PHP         | 7.4.0      | 9000
+MySQL`*`    | 5.7        | 3306
+PostgreSQL  | 11.6       | 5432
+nginx       | 1.16.1     | 80
+mailcatcher | 0.7.1      | 88
+redis       | 5.0.5      | 6379
+beanstalkd  |            | 11300
+phalcon     | 4.0.0rc3   | -
 
-> `*`: It is actually MariaDB.
+> `*`: It is actually MariaDB 10.3.20.
 
 ## Usage
 
@@ -24,19 +29,28 @@ Also recommended to install [docker-compose](https://docs.docker.com/compose/ins
 
 ```sh
 # pull latest image
-docker pull adhocore/lemp
+docker pull adhocore/lemp:7.4
 
 # Go to your project root then run
-docker run -p 8080:80 -v `pwd`:/var/www/html --name lemp -d adhocore/lemp
+docker run -p 8080:80 -p 8888:88 -v `pwd`:/var/www/html --name lemp -d adhocore/lemp:7.4
 
 # In windows, you would use %cd% instead of `pwd`
-docker run -p 8080:80 -v %cd%:/var/www/html --name lemp -d adhocore/lemp
+docker run -p 8080:80 -p 8888:88 -v %cd%:/var/www/html --name lemp -d adhocore/lemp:7.4
 
 # If you want to setup MySQL credentials, pass env vars
-docker run -p 8080:80 -v `pwd`:/var/www/html -e MYSQL_ROOT_PASSWORD=1234567890 -e MYSQL_USER=dbuser -e MYSQL_PASSWORD=123456 -e MYSQL_DATABASE=appdb --name lemp -d adhocore/lemp
+docker run -p 8080:80 -p 8888:88 -v `pwd`:/var/www/html \
+  -e MYSQL_ROOT_PASSWORD=1234567890 -e MYSQL_DATABASE=appdb \
+  -e MYSQL_USER=dbuser -e MYSQL_PASSWORD=123456 \
+  --name lemp -d adhocore/lemp:7.4
+  # for postgres you can pass in similar env as for mysql but with PGSQL_ prefix
 ```
 
 After running container as above, you will be able to browse [localhost:8080](http://localhost:8080)!
+
+The database adminer will be available for [mysql](http://localhost:8080/adminer?server=127.0.0.1%3A3306&username=root)
+and [postgres](http://localhost:8080/adminer?pgsql=127.0.0.1%3A5432&username=postgres).
+
+The mailcatcher will be available at [localhost:8888](http://localhost:8888) which displays mails in realtime.
 
 ### Stop container
 
@@ -58,7 +72,7 @@ docker start lemp
 
 > **PRO** If you develop multiple apps, you can create multiple lemp containers with different names.
 >
-> eg: `docker run -p 8081:80 -v `pwd`:/var/www/html --name new-lemp -d adhocore/lemp`
+> eg: `docker run -p 8081:80 -v $(pwd):/var/www/html --name new-lemp -d adhocore/lemp:7.4`
 
 
 ## With Docker compose
@@ -71,7 +85,7 @@ version: '3'
 
 services:
   app:
-    image: adhocore/lemp
+    image: adhocore/lemp:7.4
     # For different app you can use different names. (eg: )
     container_name: some-app
     volumes:
@@ -85,6 +99,7 @@ services:
       MYSQL_DATABASE: appdb
       MYSQL_USER: dbusr
       MYSQL_PASSWORD: securepwd
+      # for postgres you can pass in similar env as for mysql but with PGSQL_ prefix
 
 volumes:
   db_data: {}
@@ -108,19 +123,36 @@ Plus you can already set the volumes and ports there, so you dont have to type i
 - **root password**: 1234567890 (if `MYSQL_ROOT_PASSWORD` is not passed)
 - **user password**: 123456 (if `MYSQL_USER` is passed but `MYSQL_PASSWORD` is not)
 
+### PgSQL Default credentials
+
+- **postgres password**: 1234567890 (if `PGSQL_ROOT_PASSWORD` is not passed)
+- **user password**: 123456 (if `PGSQL_USER` is passed but `PGSQL_PASSWORD` is not)
+
+
 #### Accessing DB
+
 In PHP app you can access MySQL db via PDO like so:
 ```php
 $db = new PDO(
-    'mysql:unix_socket=/run/mysqld/mysqld.sock;dbname=' . getenv('MYSQL_DATABASE'),
+    'mysql:host=127.0.0.1;port=3306;dbname=' . getenv('MYSQL_DATABASE'),
     getenv('MYSQL_USER'),
     getenv('MYSQL_PASSWORD')
+);
+```
+
+You can access PgSQL db via PDO like so:
+```php
+$pdb = new PDO(
+    'pgsql:host=127.0.0.1;port=5432;dbname=' . getenv('PGSQL_DATABASE'),
+    getenv('PGSQL_USER'),
+    getenv('PGSQL_PASSWORD')
 );
 ```
 
 ### Nginx
 
 URL rewrite is already enabled for you.
+
 Either your app has `public/` folder or not, the rewrite adapts automatically.
 
 ### PHP
@@ -128,59 +160,46 @@ Either your app has `public/` folder or not, the rewrite adapts automatically.
 The following PHP extensions are installed:
 
 ```
-bcmath
-bz2
-calendar
-Core
-ctype
-curl
-date
-dom
-exif
-fileinfo
-filter
-ftp
-gd
-gettext
-gmp
-hash
-iconv
-imagick
-intl
-json
-ldap
-libxml
-mbstring
-mysqli
-mysqlnd
-openssl
-pcre
-PDO
-pdo_mysql
-pdo_sqlite
-phalcon
-Phar
-posix
-readline
-redis
-Reflection
-session
-SimpleXML
-soap
-sodium
-SPL
-sqlite3
-standard
-tideways_xhprof
-tokenizer
-xdebug
-xml
-xmlreader
-xmlwriter
-yaml
-Zend OPcache
-zip
-zlib
+- ast               - bcmath            - bz2               - calendar
+- cgi-fcgi          - core              - ctype             - curl
+- date              - dom               - event             - exif
+- fileinfo          - filter            - ftp               - gd
+- gettext           - gmp               - hash              - iconv
+- igbinary          - imagick           - imap              - intl
+- json              - ldap              - libxml            - lzf
+- mbstring          - memcached         - mongodb           - msgpack
+- mysqli            - mysqlnd           - openssl           - pcntl
+- pcre              - pdo               - pdo_mysql         - pdo_pgsql
+- pdo_sqlite        - pgsql             - phalcon           - phar
+- posix             - psr               - readline          - redis
+- reflection        - session           - simplexml         - soap
+- sockets           - sodium            - spl               - sqlite3
+- ssh2              - standard          - swoole            - swoole_async
+- sysvmsg           - sysvsem           - sysvshm           - tideways_xhprof
+- tidy              - tokenizer         - uuid              - xdebug
+- xml               - xmlreader         - xmlwriter         - yaml
+- zend opcache      - zip               - zlib
 ```
 
-Read more about [tideways](https://github.com/tideways/php-xhprof-extension).
+`phalcon` web framework `4.0.0-rc.3` has been installed.
+
+Read more about [tideways](https://github.com/tideways/php-xhprof-extension),
+[phalcon](https://github.com/phalcon/cphalcon) and [psr](https://github.com/jbboehr/php-psr).
+
+### Testing mailcatcher
+
+```sh
+# open shell
+docker exec -it lemp sh
+
+# send test mail
+echo "\n" | sendmail -S 0 test@localhost
+```
+
+Then you will see the new mail in realtime at http://localhost:8888.
+
+Or you can see check it in shell as well:
+```sh
+
+curl 0:88/messages
+```
