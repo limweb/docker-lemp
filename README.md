@@ -1,24 +1,31 @@
 ## docker-lemp
 
-> Do not use in Production.
+> Do not use this LEMP in Production.
 
-A minimal single container LEMP full stack for local development.
+> For production, use [adhocore/phpfpm](https://github.com/adhocore/docker-phpfpm)
+> then [compose](https://docs.docker.com/compose/install/) a stack using individual `nginx`, `redis`, `mysql` etc images.
+
+[`adhocore/lemp`](https://hub.docker.com/r/adhocore/lemp) is a minimal single container LEMP full stack for local development.
 
 It is quick jumpstart for onboarding you into docker based development.
 
 The docker container `adhocore/lemp` is composed of:
 
-Name        | Version    | Port
-------------|------------|------
-alpine      | 3.10       | -
-PHP         | 7.4.0      | 9000
-MySQL`*`    | 5.7        | 3306
-PostgreSQL  | 11.6       | 5432
-nginx       | 1.16.1     | 80
-mailcatcher | 0.7.1      | 88
-redis       | 5.0.5      | 6379
-beanstalkd  |            | 11300
-phalcon     | 4.0.0rc3   | -
+Name          | Version    | Port
+--------------|------------|------
+adminer       | 4.7.5      | 80
+alpine        | 3.10       | -
+beanstalkd    | 1.10       | 11300
+elasticsearch | 6.4.3      | 9200,9300
+mailcatcher   | 0.7.1      | 88
+memcached     | 1.5.16     | 11211
+MySQL`*`      | 5.7        | 3306
+nginx         | 1.16.1     | 80
+phalcon       | 4.0.0rc3   | -
+PHP           | 7.4.2      | 9000
+PostgreSQL    | 11.6       | 5432
+redis         | 5.0.5      | 6379
+swoole        | 4.4.12     | -
 
 > `*`: It is actually MariaDB 10.3.20.
 
@@ -157,34 +164,7 @@ Either your app has `public/` folder or not, the rewrite adapts automatically.
 
 ### PHP
 
-The following PHP extensions are installed:
-
-```
-- ast               - bcmath            - bz2               - calendar
-- cgi-fcgi          - core              - ctype             - curl
-- date              - dom               - event             - exif
-- fileinfo          - filter            - ftp               - gd
-- gettext           - gmp               - hash              - iconv
-- igbinary          - imagick           - imap              - intl
-- json              - ldap              - libxml            - lzf
-- mbstring          - memcached         - mongodb           - msgpack
-- mysqli            - mysqlnd           - openssl           - pcntl
-- pcre              - pdo               - pdo_mysql         - pdo_pgsql
-- pdo_sqlite        - pgsql             - phalcon           - phar
-- posix             - psr               - readline          - redis
-- reflection        - session           - simplexml         - soap
-- sockets           - sodium            - spl               - sqlite3
-- ssh2              - standard          - swoole            - swoole_async
-- sysvmsg           - sysvsem           - sysvshm           - tideways_xhprof
-- tidy              - tokenizer         - uuid              - xdebug
-- xml               - xmlreader         - xmlwriter         - yaml
-- zend opcache      - zip               - zlib
-```
-
-`phalcon` web framework `4.0.0-rc.3` has been installed.
-
-Read more about [tideways](https://github.com/tideways/php-xhprof-extension),
-[phalcon](https://github.com/phalcon/cphalcon) and [psr](https://github.com/jbboehr/php-psr).
+For available extensions, check [adhocore/phpfpm#extension](https://github.com/adhocore/docker-phpfpm#extensions).
 
 ### Testing mailcatcher
 
