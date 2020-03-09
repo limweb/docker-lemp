@@ -17,5 +17,11 @@ services:
       MYSQL_DATABASE: dbname
       MYSQL_USER: dbuser
       MYSQL_PASSWORD: dbpass
+      PGSQL_ROOT_PASSWORD: dbrootpass
+      PGSQL_USER: dbuser
+      PGSQL_PASSWORD: dbpass
+
     network_mode:  "bridge"
+
+
 
